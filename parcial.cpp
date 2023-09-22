@@ -24,7 +24,9 @@ void loop(){
   opc == Serial.parseInt();
   
   if(opc==1){
+	for (int n=0; n<8; n++){
     verificacion();
+	}
   }
   
   else if(opc==2){
@@ -52,6 +54,17 @@ void menu(){
 
 void verificacion(){
   Serial.println("Encendiendo LEDs en matriz");
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, 255); //Encender leds
+  digitalWrite(pinLatch, HIGH);
+  delay(2000);
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, 0); //Apagar leds
+  digitalWrite(pinLatch, HIGH);
+  delay(2000);
+}
+
+
 }
 
 
