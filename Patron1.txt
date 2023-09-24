@@ -10,7 +10,7 @@ int main() {
     int **matriz = new int*[filas];
     for (int i = 0; i < filas; i++) {
 	matriz[i] = new int[columnas]();
-    }
+	}
 
     for (int i = 0; i < filas; i++) {
         for (int j = i; j < columnas - i; j++) {
@@ -22,10 +22,16 @@ int main() {
     // Imprimir la matriz
     for (int i = 0; i < filas; i++) {
         for (int j = 0; j < columnas; j++) {
-            cout << matriz[i][j];
+            cout << matriz[i][j] << " ";
         }
         cout << endl;
     }
+
+    // Liberar memoria
+        for (int i = 0; i < filas; i++) {
+            delete[] matriz[i];
+        }
+        delete[] matriz;
 
     return 0;
 }
