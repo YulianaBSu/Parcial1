@@ -30,15 +30,31 @@ void loop(){
   }
   
   else if(opc==2){
-    Serial.print("Ingrese posicion de los LEDS");
-    imagen();
+    Serial.println("Ingreso de patron");
+    int fila, columna;
+    while (Serial.available() == 0);
+    fila = Serial.parseInt();
+    while (Serial.available() == 0);
+    columna = Serial.parseInt();
+    Serial.println("Ingrese posicion de los LEDS");
+	Serial.println("Indique numero de fila y columna (1-8) separado por un espacio");
+	Serial.println("Ej: (1 2)");
+	if (fila >= 1 && fila <= 8 && columna >= 1 && columna <= 8) {
+    imagen(fila, columna);
+	}
+	else {
+	  Serial.println("Opcion invalida. Por favor ingresa valores entre 1 y 8.");
+	}
+	digitalWrite(pinLatch, LOW);
+    shiftOut(pinData, pinClock, MSBFIRST, B00000000);
+    digitalWrite(pinLatch, HIGH);
+  }
   }
   else if(opc==3){
     Serial.print("Mostrando patrones definidos");
     patrones();
   }
  }
-}
 
 
 void menu(){
@@ -68,8 +84,13 @@ void verificacion(){ //Funcion para encender todos los LEDs
 
 
 
-void imagen(){
+void imagen(int fila, int columna){
   Serial.println("Patron ingresado");
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, ~(B00000001 << fila-1)); 
+  shiftOut(pinData, pinClock, MSBFIRST, B10000000 >> columna-1); 
+  digitalWrite(pinLatch, HIGH);
+  delay(2000);
 }
 
 
