@@ -16,12 +16,12 @@ void setup(){
   pinMode(pinData, OUTPUT);
   pinMode(pinLatch, OUTPUT);
   pinMode(pinClock, OUTPUT);
-  menu();
 }
 
 void loop(){
-  if(Serial.available() > 0){
-  opc = Serial.read()- '0';
+  menu();
+  while (Serial.available() == 0);
+  opc = Serial.parseInt();
   
   if(opc==1){
 	for (int n=0; n<8; n++){
@@ -30,17 +30,25 @@ void loop(){
   }
   
   else if(opc==2){
-    Serial.println("Ingreso de patron");
-    int fila, columna;
+    int fila, columna, rep, repi=0;
+    Serial.println("Ingrese cantidad de posiciones que desea indicar: ");
     while (Serial.available() == 0);
-    fila = Serial.parseInt();
-    while (Serial.available() == 0);
-    columna = Serial.parseInt();
+    rep = Serial.parseInt();
+    
+    while (repi < rep) {
+      
     Serial.println("Ingrese posicion de los LEDS");
 	Serial.println("Indique numero de fila y columna (1-8) separado por un espacio");
 	Serial.println("Ej: (1 2)");
+      
+    while (Serial.available() == 0);
+    columna = Serial.parseInt();
+    while (Serial.available() == 0);
+    fila = Serial.parseInt();
+
 	if (fila >= 1 && fila <= 8 && columna >= 1 && columna <= 8) {
     imagen(fila, columna);
+    repi++;
 	}
 	else {
 	  Serial.println("Opcion invalida. Por favor ingresa valores entre 1 y 8.");
@@ -49,14 +57,15 @@ void loop(){
     shiftOut(pinData, pinClock, MSBFIRST, B00000000);
     digitalWrite(pinLatch, HIGH);
   }
+    Serial.println("Ejecucion finalizada.");
+    return;
   }
+  
   else if(opc==3){
     Serial.print("Mostrando patrones definidos");
     patrones();
   }
- }
-
-
+}
 void menu(){
   Serial.println("MENU PRINCIPAL");
   Serial.println("1. Encender todos los LEDs");
@@ -91,6 +100,9 @@ void imagen(int fila, int columna){
   shiftOut(pinData, pinClock, MSBFIRST, B10000000 >> columna-1); 
   digitalWrite(pinLatch, HIGH);
   delay(2000);
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, B00000000);
+  digitalWrite(pinLatch, HIGH);
 }
 
 
