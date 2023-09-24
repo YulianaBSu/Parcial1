@@ -4,37 +4,43 @@ using namespace std;
 const int filas = 8;
 const int columnas = 8;
 
-int main() {
-    char matriz[filas][columnas];
+int main() {    
 
-    // Inic matriz con espacios en blanco
+//PATRON 4
+
+    //Definir arreglo de punteros
+    int **matriz = new int*[filas];
     for (int i = 0; i < filas; i++) {
-        for (int j = 0; j < columnas; j++) {
-            matriz[i][j] = ' ';
-        }
+    matriz[i] = new int[columnas]();
     }
 
-    // Llenar 4 espacios con "X" y desplazarse un espacio en cada iteración
+    // Llenar 4 espacios y desplazarse un espacio en cada iteración
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            matriz[i][i+j] = 'X';
-        }
+            matriz[i][i+j] = 1;
+          }
         }
 
     // Revertir el ciclo a partir de la quinta fila
     for (int i = 4; i < filas; i++) {
         for (int j = 0; j < 4; j++) {
-            matriz[i][(j - i + columnas-1) ] = 'X';
+            matriz[i][(j - i + columnas-1) ] = 1;
         }
     }
 
     // Imprimir la matriz
     for (int i = 0; i < filas; i++) {
         for (int j = 0; j < columnas; j++) {
-            cout << matriz[i][j] << " ";
+            cout << matriz[i][j];
         }
         cout << endl;
     }
+
+    // Liberar memoria
+        for(int i = 0; i < filas; i++) {
+            delete[] matriz[i];
+        }
+        delete[] matriz;
 
     return 0;
 }
