@@ -23,6 +23,125 @@ void setup(){
 }
 
 void loop(){
+  publik();
+}
+
+void menu(){
+  Serial.println("MENU PRINCIPAL");
+  Serial.println("1. Encender todos los LEDs");
+  Serial.println("2. Ingresar patron");
+  Serial.println("3. Visualizar patrones");
+  Serial.println("4. Ejecutar todos los anteriores");
+  Serial.println("Ingrese una opcion: ");
+  
+}
+
+void verificacion(){ //Funcion para encender todos los LEDs
+  Serial.println("Encendiendo LEDs en matriz");
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, 255); //Encender leds
+  digitalWrite(pinLatch, HIGH);
+  delay(2000);
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, 0); //Apagar leds
+  digitalWrite(pinLatch, HIGH);
+  delay(2000);
+}
+
+void imagen(byte fila, byte columna){
+  Serial.println("Patron ingresado");
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, ~(B00000001 << columna-1)); 
+  shiftOut(pinData, pinClock, MSBFIRST, B10000000 >> fila-1); 
+  digitalWrite(pinLatch, HIGH);
+  delay(2000);
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, B00000000);
+  digitalWrite(pinLatch, HIGH);
+}
+
+void patrones(unsigned long duracion) {
+  byte** leds = new byte*[filas]; 
+  for (byte i = 0; i < filas; i++) {
+    leds[i] = new byte[columnas]();
+  }
+  unsigned long inicio;
+//Patron1
+  inicio = millis();
+  while (millis() - inicio < duracion) { // Continuar por 7 segundos
+  for (byte i = 0; i < filas; i++) {
+    for (byte j = i; j < columnas - i; j++) {
+      encenderLED(i + 4, j); 
+      encenderLED(filas - i - 5, j); 
+    }
+  }
+  }
+  
+//Patron2
+  inicio = millis();
+  while (millis() - inicio < duracion) { // Continuar por 7 segundos  
+  for(byte i = 0; i < filas; i++) {
+    encenderLED(i , i); 
+    encenderLED(i, filas - i - 1); 
+      digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, B11111111); 
+  shiftOut(pinData, pinClock, MSBFIRST, B00000000); 
+  digitalWrite(pinLatch, HIGH);
+    }
+    
+  }
+  
+//Patron3
+  inicio = millis();
+  while (millis() - inicio < duracion) { // Continuar por 7 segundos    
+  for (byte i = 0; i < filas; i++) {
+        for (byte j = 0; j < columnas; j++) {
+            // Patrón de marcado
+            if (
+                (i==0 || i==1 || i==4 || i==5) &&
+                (j==0 || j==1 || j==3 || j==4 || j==6 || j==7)
+            ) 
+            {
+                encenderLED(i , j);
+            }
+            else if (
+                (i==2 || i==3 || i==6 || i==7) &&
+                (j==1 || j==2 || j==4 || j==5 || j==7)
+            ) {
+                encenderLED(i , j);;
+            }
+        }
+    }
+  }
+
+//Patron4
+  inicio = millis();
+  while (millis() - inicio < duracion) { // Continuar por 7 segundos    
+  for (byte i = 0; i < 4; i++) {
+    for (byte j = 0; j < 4; j++) {
+      encenderLED(i, i + j);
+    }
+  }
+
+  for (byte i = 4; i < filas; i++) {
+    for (byte j = 0; j < 4; j++) {
+      encenderLED(i, (j - i + columnas - 1));
+    }
+  }
+  }
+    // Apagar todos los LEDs
+  for (byte i = 0; i < filas; i++) {
+    for (byte j = 0; j < columnas; j++) {
+      apagarLEDs(i, j); }
+  }
+  
+
+  // Liberar memoria
+  liberarMemoria(leds);
+}
+
+
+void publik(){
   menu();
   while (Serial.available() == 0);
   opc = Serial.parseInt();
@@ -67,141 +186,15 @@ void loop(){
   
   else if(opc==3){
     
-    Serial.println("Ingrese el tiempo de duracion de ciclos en milisegundos:");
+    Serial.println("Ingrese el tiempo de duración de ciclos en milisegundos:");
     while (Serial.available() == 0);
     unsigned long duracionc = Serial.parseInt();     
     Serial.print("Mostrando patrones definidos");    
     patrones(duracionc);
   }
-}
-void menu(){
-  Serial.println("MENU PRINCIPAL");
-  Serial.println("1. Encender todos los LEDs");
-  Serial.println("2. Ingresar patron");
-  Serial.println("3. Visualizar patrones");
-  Serial.println("4. Ejecutar todos los anteriores");
-  Serial.println("Ingrese una opcion: ");
-  
+
 }
 
-
-void verificacion(){ //Funcion para encender todos los LEDs
-  Serial.println("Encendiendo LEDs en matriz");
-  digitalWrite(pinLatch, LOW);
-  shiftOut(pinData, pinClock, MSBFIRST, 255); //Encender leds
-  digitalWrite(pinLatch, HIGH);
-  delay(2000);
-  digitalWrite(pinLatch, LOW);
-  shiftOut(pinData, pinClock, MSBFIRST, 0); //Apagar leds
-  digitalWrite(pinLatch, HIGH);
-  delay(2000);
-}
-
-
-
-
-
-void imagen(byte fila, byte columna){
-  Serial.println("Patron ingresado");
-  digitalWrite(pinLatch, LOW);
-  shiftOut(pinData, pinClock, MSBFIRST, ~(B00000001 << columna-1)); 
-  shiftOut(pinData, pinClock, MSBFIRST, B10000000 >> fila-1); 
-  digitalWrite(pinLatch, HIGH);
-  delay(2000);
-  digitalWrite(pinLatch, LOW);
-  shiftOut(pinData, pinClock, MSBFIRST, B00000000);
-  digitalWrite(pinLatch, HIGH);
-}
-
-
-void patrones(unsigned long duracion) {
-  byte** leds = new byte*[filas]; 
-  for (byte i = 0; i < filas; i++) {
-    leds[i] = new byte[columnas]();
-  }
-  unsigned long inicio;
-//Patron1
-  inicio = millis();
-  while (millis() - inicio < duracion) { 
-  for (byte i = 0; i < filas; i++) {
-    for (byte j = i; j < columnas - i; j++) {
-      encenderLED(i + 4, j); 
-      encenderLED(filas - i - 5, j); 
-    }
-  }
-  }
-  
-//Patron2
-  inicio = millis();
-  while (millis() - inicio < duracion) { 
-  for(byte i = 0; i < filas; i++) {
-    encenderLED(i , i); 
-    encenderLED(i, filas - i - 1); 
-      digitalWrite(pinLatch, LOW);
-  shiftOut(pinData, pinClock, MSBFIRST, B11111111); 
-  shiftOut(pinData, pinClock, MSBFIRST, B00000000); 
-  digitalWrite(pinLatch, HIGH);
-    }
-    
-  }
-  
-//Patron3
-  inicio = millis();
-  while (millis() - inicio < duracion) { 
-  for (byte i = 0; i < filas; i++) {
-        for (byte j = 0; j < columnas; j++) {
-            // Patrón de marcado
-            if (
-                (i==0 || i==1 || i==4 || i==5) &&
-                (j==0 || j==1 || j==3 || j==4 || j==6 || j==7)
-            ) 
-            {
-                encenderLED(i , j);
-            }
-            else if (
-                (i==2 || i==3 || i==6 || i==7) &&
-                (j==1 || j==2 || j==4 || j==5 || j==7)
-            ) {
-                encenderLED(i , j);;
-            }
-        }
-    }
-  }
-
-//Patron4
-  inicio = millis();
-  while (millis() - inicio < duracion) { 
-  for (byte i = 0; i < 4; i++) {
-    for (byte j = 0; j < 4; j++) {
-      encenderLED(i, i + j);
-    }
-  }
-
-  for (byte i = 4; i < filas; i++) {
-    for (byte j = 0; j < 4; j++) {
-      encenderLED(i, (j - i + columnas - 1));
-    }
-  }
-  }
-    // Apagar todos los LEDs
-  for (byte i = 0; i < filas; i++) {
-    for (byte j = 0; j < columnas; j++) {
-      apagarLEDs(i, j); }
-  }
-  
-
-  // Liberar memoria
-  liberarMemoria(leds);
-}
-
-
-void publik(){
-  Serial.println("1.Verificar LEDs");
-  
-  Serial.println("b.Imagen de prueba");
-  Serial.println("c.Secuencia de patrones");
-  
-}
 void encenderLED(byte fila, byte columna) {
   digitalWrite(pinLatch, LOW);
   shiftOut(pinData, pinClock, MSBFIRST, ~(1 << (7 - fila))); 
