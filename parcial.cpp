@@ -121,12 +121,18 @@ void patrones() {
       encenderLED(filas - i - 5, j); 
     }
   }
-  
   delay(1000);
   
+//Patron2
+  for(int i = 0; i < filas; i++) {
+    encenderLED(i , i); 
+    encenderLED(i, filas - i - 1); 
+    }
+  delay(1000);  
+  
   digitalWrite(pinLatch, LOW);
-  shiftOut(pinData, pinClock, MSBFIRST, B11111111); 
-  shiftOut(pinData, pinClock, MSBFIRST, B00000000);
+  shiftOut(pinData, pinClock, MSBFIRST, B11111111); // Apaga todas las columnas
+  shiftOut(pinData, pinClock, MSBFIRST, B00000000); // Apaga todas las filas
   digitalWrite(pinLatch, HIGH);
 
   // Liberar memoria
