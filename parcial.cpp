@@ -3,6 +3,8 @@ int pinData = 11;   // Pin de datos
 int pinLatch = 8;  // Pin de almacenamiento 
 int pinClock = 12;  // Pin de reloj
 int opc = 0;
+const int filas = 8;
+const int columnas = 8;
 
 void menu();
 void verificacion();
@@ -62,6 +64,7 @@ void loop(){
   }
   
   else if(opc==3){
+    
     Serial.print("Mostrando patrones definidos");
     patrones();
   }
@@ -106,14 +109,48 @@ void imagen(int fila, int columna){
 }
 
 
-void patrones(){
-  Serial.println("Patron");
+void patrones() {
+  int** leds = new int*[filas]; 
+  for (int i = 0; i < filas; i++) {
+    leds[i] = new int[columnas]();
+  }
+//Patron1
+  for (int i = 0; i < filas; i++) {
+    for (int j = i; j < columnas - i; j++) {
+      encenderLED(i + 4, j); 
+      encenderLED(filas - i - 5, j); 
+    }
+  }
+  
+  delay(1000);
+  
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, B11111111); 
+  shiftOut(pinData, pinClock, MSBFIRST, B00000000);
+  digitalWrite(pinLatch, HIGH);
+
+  // Liberar memoria
+  liberarMemoria(leds);
 }
+
 
 void publik(){
   Serial.println("a.Verificar LEDs");
   Serial.println("b.Imagen de prueba");
   Serial.println("c.Secuencia de patrones");
   
+}
+void encenderLED(int fila, int columna) {
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, ~(1 << (7 - fila))); 
+  shiftOut(pinData, pinClock, MSBFIRST, B10000000 >> columna);   
+  digitalWrite(pinLatch, HIGH);
+}
+
+void liberarMemoria(int** leds) {
+  for (int i = 0; i < filas; i++) {
+    delete[] leds[i];
+  }
+  delete[] leds;
 }
 
