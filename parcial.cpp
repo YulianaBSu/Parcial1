@@ -5,6 +5,8 @@ byte pinClock = 12;  // Pin de reloj
 byte opc = 0;
 const byte filas = 8;
 const byte columnas = 8;
+unsigned long duracionc;
+unsigned long inicio;
 
 void menu();
 void verificacion();
@@ -65,8 +67,11 @@ void loop(){
   
   else if(opc==3){
     
-    Serial.print("Mostrando patrones definidos");
-    patrones();
+    Serial.println("Ingrese el tiempo de duracion de ciclos en milisegundos:");
+    while (Serial.available() == 0);
+    unsigned long duracionc = Serial.parseInt();     
+    Serial.print("Mostrando patrones definidos");    
+    patrones(duracionc);
   }
 }
 void menu(){
@@ -109,28 +114,40 @@ void imagen(byte fila, byte columna){
 }
 
 
-void patrones() {
+void patrones(unsigned long duracion) {
   byte** leds = new byte*[filas]; 
   for (byte i = 0; i < filas; i++) {
     leds[i] = new byte[columnas]();
   }
+  unsigned long inicio;
 //Patron1
+  inicio = millis();
+  while (millis() - inicio < duracion) { 
   for (byte i = 0; i < filas; i++) {
     for (byte j = i; j < columnas - i; j++) {
       encenderLED(i + 4, j); 
       encenderLED(filas - i - 5, j); 
     }
   }
-  delay(1000);
+  }
   
 //Patron2
+  inicio = millis();
+  while (millis() - inicio < duracion) { 
   for(byte i = 0; i < filas; i++) {
     encenderLED(i , i); 
     encenderLED(i, filas - i - 1); 
+      digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, B11111111); 
+  shiftOut(pinData, pinClock, MSBFIRST, B00000000); 
+  digitalWrite(pinLatch, HIGH);
     }
-  delay(1000);  
+    
+  }
   
 //Patron3
+  inicio = millis();
+  while (millis() - inicio < duracion) { 
   for (byte i = 0; i < filas; i++) {
         for (byte j = 0; j < columnas; j++) {
             // Patrón de marcado
@@ -149,9 +166,11 @@ void patrones() {
             }
         }
     }
-  delay(1000);
+  }
 
 //Patron4
+  inicio = millis();
+  while (millis() - inicio < duracion) { 
   for (byte i = 0; i < 4; i++) {
     for (byte j = 0; j < 4; j++) {
       encenderLED(i, i + j);
@@ -163,12 +182,13 @@ void patrones() {
       encenderLED(i, (j - i + columnas - 1));
     }
   }
+  }
+    // Apagar todos los LEDs
+  for (byte i = 0; i < filas; i++) {
+    for (byte j = 0; j < columnas; j++) {
+      apagarLEDs(i, j); }
+  }
   
-  
-  digitalWrite(pinLatch, LOW);
-  shiftOut(pinData, pinClock, MSBFIRST, B11111111); 
-  shiftOut(pinData, pinClock, MSBFIRST, B00000000); 
-  digitalWrite(pinLatch, HIGH);
 
   // Liberar memoria
   liberarMemoria(leds);
@@ -176,7 +196,8 @@ void patrones() {
 
 
 void publik(){
-  Serial.println("a.Verificar LEDs");
+  Serial.println("1.Verificar LEDs");
+  
   Serial.println("b.Imagen de prueba");
   Serial.println("c.Secuencia de patrones");
   
@@ -195,3 +216,9 @@ void liberarMemoria(byte** leds) {
   delete[] leds;
 }
 
+void apagarLEDs(byte fila, byte columna) {
+  digitalWrite(pinLatch, LOW);
+  shiftOut(pinData, pinClock, MSBFIRST, ~(1 << (7 - fila))); 
+  shiftOut(pinData, pinClock, MSBFIRST, B01111111 >> columna);  // Apagar todos los LEDs
+  digitalWrite(pinLatch, HIGH);
+}
