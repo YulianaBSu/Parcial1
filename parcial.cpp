@@ -130,6 +130,27 @@ void patrones() {
     }
   delay(1000);  
   
+//Patron3
+  for (int i = 0; i < filas; i++) {
+        for (int j = 0; j < columnas; j++) {
+            // Patrón de marcado
+            if (
+                (i==0 || i==1 || i==4 || i==5) &&
+                (j==0 || j==1 || j==3 || j==4 || j==6 || j==7)
+            ) 
+            {
+                encenderLED(i , j);
+            }
+            else if (
+                (i==2 || i==3 || i==6 || i==7) &&
+                (j==1 || j==2 || j==4 || j==5 || j==7)
+            ) {
+                encenderLED(i , j);;
+            }
+        }
+    }
+  delay(1000);
+  
   digitalWrite(pinLatch, LOW);
   shiftOut(pinData, pinClock, MSBFIRST, B11111111); // Apaga todas las columnas
   shiftOut(pinData, pinClock, MSBFIRST, B00000000); // Apaga todas las filas
