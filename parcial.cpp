@@ -91,10 +91,6 @@ void patrones(unsigned long duracion) {
   for(byte i = 0; i < filas; i++) {
     encenderLED(i , i); 
     encenderLED(i, filas - i - 1); 
-      digitalWrite(pinLatch, LOW);
-  shiftOut(pinData, pinClock, MSBFIRST, B11111111); 
-  shiftOut(pinData, pinClock, MSBFIRST, B00000000); 
-  digitalWrite(pinLatch, HIGH);
     }
     
   }
