@@ -97,7 +97,7 @@ void patrones(unsigned long duracion) {
   
 //Patron3
   inicio = millis();
-  while (millis() - inicio < duracion) { // Continuar por 7 segundos    
+  while (millis() - inicio < duracion) { 
   for (byte i = 0; i < filas; i++) {
         for (byte j = 0; j < columnas; j++) {
             // Patrón de marcado
@@ -120,7 +120,7 @@ void patrones(unsigned long duracion) {
 
 //Patron4
   inicio = millis();
-  while (millis() - inicio < duracion) { // Continuar por 7 segundos    
+  while (millis() - inicio < duracion) { 
   for (byte i = 0; i < 4; i++) {
     for (byte j = 0; j < 4; j++) {
       encenderLED(i, i + j);
