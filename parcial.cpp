@@ -7,6 +7,7 @@ const byte filas = 8;
 const byte columnas = 8;
 unsigned long duracionc;
 unsigned long inicio;
+unsigned long tiempo;
 
 void menu();
 void verificacion();
@@ -36,16 +37,24 @@ void menu(){
   
 }
 
-void verificacion(){ //Funcion para encender todos los LEDs
-  Serial.println("Encendiendo LEDs en matriz");
+void verificacion(byte** leds, byte filas, byte columnas, unsigned long tiempo){
+  Serial.println("Iniciando verificacion");  
+  for (int i = 0; i < filas; i++) {
+    for (int j = 0; j < columnas; j++) {
   digitalWrite(pinLatch, LOW);
-  shiftOut(pinData, pinClock, MSBFIRST, 255); //Encender leds
+  shiftOut(pinData, pinClock, MSBFIRST, leds[i][j]); 
   digitalWrite(pinLatch, HIGH);
-  delay(2000);
+  delay(tiempo);
+    }
+  }
+  for (int i = 0; i < filas; i++) {
+    for (int j = 0; j < columnas; j++) {  
   digitalWrite(pinLatch, LOW);
-  shiftOut(pinData, pinClock, MSBFIRST, 0); //Apagar leds
+  shiftOut(pinData, pinClock, MSBFIRST, 0);
   digitalWrite(pinLatch, HIGH);
-  delay(2000);
+    }
+  }
+  liberarMemoria(leds);
 }
 
 void imagen(byte fila, byte columna){
@@ -68,7 +77,7 @@ void patrones(unsigned long duracion) {
   unsigned long inicio;
 //Patron1
   inicio = millis();
-  while (millis() - inicio < duracion) { // Continuar por 7 segundos
+  while (millis() - inicio < duracion) {
   for (byte i = 0; i < filas; i++) {
     for (byte j = i; j < columnas - i; j++) {
       encenderLED(i + 4, j); 
@@ -79,7 +88,7 @@ void patrones(unsigned long duracion) {
   
 //Patron2
   inicio = millis();
-  while (millis() - inicio < duracion) { // Continuar por 7 segundos  
+  while (millis() - inicio < duracion) { 
   for(byte i = 0; i < filas; i++) {
     encenderLED(i , i); 
     encenderLED(i, filas - i - 1); 
@@ -147,9 +156,26 @@ void publik(){
   opc = Serial.parseInt();
   
   if(opc==1){
-	for (byte n=0; n<8; n++){
-    verificacion();
-	}
+   byte rept, repa=0;
+    Serial.println("Ingrese cantidad tiempo de encendido y apagado de leds: ");
+    while (Serial.available() == 0);
+    tiempo = Serial.parseInt();
+    Serial.println("Ingrese cantidad veces que desea repetir el ciclo ");
+    while (Serial.available() == 0);
+    rept = Serial.parseInt();
+    
+    while (repa<rept){
+    byte** leds = new byte*[filas];
+	for (byte i=0; i<filas; i++){
+    leds[i] = new byte[columnas];
+    for (byte j=0; j<columnas; j++) {
+      leds[i][j] = 255;
+    }
+  }
+     verificacion(leds, filas, columnas, tiempo);
+     repa++;
+  }
+	return;
   }
   
   else if(opc==2){
