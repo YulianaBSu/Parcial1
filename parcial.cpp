@@ -112,7 +112,7 @@ void patrones(unsigned long duracion) {
                 (i==2 || i==3 || i==6 || i==7) &&
                 (j==1 || j==2 || j==4 || j==5 || j==7)
             ) {
-                encenderLED(i , j);;
+                encenderLED(i , j);
             }
         }
     }
