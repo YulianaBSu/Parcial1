@@ -157,7 +157,7 @@ void publik(){
   
   if(opc==1){
    byte rept, repa=0;
-    Serial.println("Ingrese cantidad tiempo de encendido y apagado de leds: ");
+    Serial.println("Ingrese cantidad tiempo de encendido de leds: ");
     while (Serial.available() == 0);
     tiempo = Serial.parseInt();
     Serial.println("Ingrese cantidad veces que desea repetir el ciclo ");
