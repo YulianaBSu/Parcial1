@@ -32,7 +32,6 @@ void menu(){
   Serial.println("1. Encender todos los LEDs");
   Serial.println("2. Ingresar patron");
   Serial.println("3. Visualizar patrones");
-  Serial.println("4. Ejecutar todos los anteriores");
   Serial.println("Ingrese una opcion: ");
   
 }
